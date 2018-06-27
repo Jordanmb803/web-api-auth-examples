@@ -14,7 +14,8 @@ class App extends Component {
         name: 'Not Checked',
         img: '',
       },
-      catergories: [{ id: 'something', name: 'something', icons: [{url: ''}] }]
+      catergories: [{ id: 'something', name: 'something', icons: [{ url: '' }] }],
+      featuredPlaylist: { message: 'message', playlists: { items: [{images: [{url: ''}]}] } },
     }
     if (params.access_token) {
       spotifyWebApi.setAccessToken(params.access_token)
@@ -33,22 +34,25 @@ class App extends Component {
 
   getNowPlaying() {
     spotifyWebApi.getMyCurrentPlaybackState().then(res => {
-      this.setState({
-        nowPlaying: {
-          name: res.item.name,
-          img: res.item.album.images[0].url
-        }
-      })
-      spotifyWebApi.getCategories().then(res => {
-        this.setState({
-          catergories: res.categories.items
+      spotifyWebApi.getCategories().then(result => {
+        spotifyWebApi.getFeaturedPlaylists().then(playlists => {
+          console.log(playlists)
+          this.setState({
+            nowPlaying: {
+              name: res.item.name,
+              img: res.item.album.images[0].url
+            },
+            catergories: result.categories.items,
+            featuredPlaylist: playlists
+          })
+
         })
       })
     })
   }
 
   render() {
-    console.log(this.state.catergories)
+    console.log(this.state.featuredPlaylist)
     return (
       <div className="App">
         <a href='http://localhost:8888'><button>Login with Spotify</button></a>
@@ -58,10 +62,21 @@ class App extends Component {
         </div>
         <div> Catergories: {this.state.catergories.map(cat => {
           return <div key={cat.id}>
-              <p>{cat.name}</p>
-              <img src={cat.icons[0].url}/>
+            <p>{cat.name}</p>
+            <img src={cat.icons[0].url} />
           </div>
-        })}</div>
+        })}
+        </div>
+        <div>Featured Playlist:
+          <h3>{this.state.featuredPlaylist.message}</h3>
+          {this.state.featuredPlaylist.playlists.items.map(plylist=> {
+            return <div key={plylist.id}>
+              <p>{plylist.name}</p>
+              <img src={plylist.images[0].url} style={{height: plylist.images[0].height, width: plylist.images[0].width}} />
+            </div>
+          })}
+
+        </div>
         <button onClick={() => this.getNowPlaying()}>
           check now playing
         </button>
