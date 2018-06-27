@@ -42,15 +42,18 @@ class App extends Component {
       spotifyWebApi.getCategories().then(result => {
         spotifyWebApi.getFeaturedPlaylists().then(playlists => {
           spotifyWebApi.getNewReleases().then(newReleases => {
-            this.setState({
-              nowPlaying: {
-                name: res.item.name,
-                img: res.item.album.images[0].url
-              },
-              catergories: result.categories.items,
-              featuredPlaylist: playlists,
-              newReleases: newReleases.albums.items
-            })
+            let token = spotifyWebApi.getMe()
+            console.log(token)
+             
+              this.setState({
+                nowPlaying: {
+                  name: res.item.name,
+                  img: res.item.album.images[0].url
+                },
+                catergories: result.categories.items,
+                featuredPlaylist: playlists,
+                newReleases: newReleases.albums.items
+              })
 
           })
 
